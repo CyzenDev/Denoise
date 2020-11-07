@@ -281,7 +281,7 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                     }
 
                     audioTrack.write(dataShort, 0, DATA_LENGTH /*, AudioTrack.WRITE_NON_BLOCKING*/);
-                    if (!hasGetUnderrunCount) {
+                    if (!hasGetUnderrunCount && Utils.IS_NOUGAT) {
                         hasGetUnderrunCount = true;
                         audioTrack.getUnderrunCount();
                     }

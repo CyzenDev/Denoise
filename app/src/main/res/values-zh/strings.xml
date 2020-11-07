@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">ANC Demo</string>
+
+    <string name="settings">设置</string>
+
+
+    <!-- Misc -->
+    <string name="tips">提示</string>
+    <string name="warning">警告</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="def">默认</string>
+    <string name="experimental">实验性</string>
+
+
+    <!-- Main -->
+    <string name="grant">授权</string>
+    <string name="deny">拒绝</string>
+    <string name="grant_permissions_denied">未授予权限，功能无法使用</string>
+
+
+    <!-- Settings -->
+    <string name="denoise">降噪</string>
+    <string name="input">输入</string>
+    <string name="audio_source">声音来源</string>
+    <string name="audio_sample_rate">采样频率</string>
+    <string name="audio_channel">声道</string>
+    <string name="audio_encoding">音频编码</string>
+    <string name="buffer_size">缓冲区大小(暂不支持编辑)</string>
+    <string name="bytes">字节</string>
+    <string name="output">输出</string>
+
+</resources>

@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">ANC Demo</string>
+
+    <string name="settings">Settings</string>
+
+
+    <!-- Misc -->
+    <string name="tips">Tips</string>
+    <string name="warning">Warning</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="experimental">Experimental</string>
+
+
+    <!-- Main -->
+    <string name="grant">Grant</string>
+    <string name="deny">Deny</string>
+    <string name="grant_permissions_denied">Permission not granted, features not available</string>
+
+
+    <!-- Settings -->
+    <string name="denoise">Denoise</string>
+    <string name="input">Input</string>
+    <string name="audio_source">Audio source</string>
+    <string name="audio_sample_rate">Sample rate</string>
+    <string name="audio_channel">Audio channel</string>
+    <string name="audio_encoding">Audio encoding</string>
+    <string name="buffer_size">Buffer size</string>
+    <string name="bytes">Bytes</string>
+    <string name="output">Output</string>
+
+</resources>

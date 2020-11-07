@@ -1,0 +1,15 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+
+
+    <dimen name="toolbar_elevation">3dp</dimen>
+
+    <!-- ProgressBar -->
+    <dimen name="progress_bar_height">4dp</dimen>
+    <dimen name="progress_bar_corner">4dp</dimen>
+
+
+    <!-- Custom cardView -->
+    <dimen name="card_corner">5dp</dimen>
+    <dimen name="card_elevation">3dp</dimen>
+</resources>

@@ -1,0 +1,84 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryVariant">@color/blue_500</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/blue_500</item>
+        <item name="colorSecondaryVariant">@color/blue_500</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="colorControlNormal">?colorOnPrimary</item>
+        <item name="colorSurface">@color/content_background</item>
+        <item name="alertDialogTheme">@style/alertDialogTheme</item>
+
+        <item name="android:alertDialogTheme">@style/alertDialogTheme</item>
+        <item name="android:scrollbarThumbVertical">@drawable/scrollbar_thumb_vertical</item>
+        <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="Widget.MaterialComponents.PopupMenu" />
+
+    <!-- Dialog anim -->
+    <style name="dialogAnim" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/dialog_open</item>
+        <item name="android:windowExitAnimation">@anim/dialog_close</item>
+    </style>
+
+
+    <!--AlertDialog Theme-->
+    <style name="alertDialogTheme" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/blue_500</item>
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorSurface">@color/content_background</item>
+        <item name="buttonBarPositiveButtonStyle">@style/alertBtnStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/alertBtnStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/alertNeutralBtnStyle</item>
+        <item name="textColorAlertDialogListItem">@color/textColor</item>
+
+        <item name="android:buttonBarPositiveButtonStyle">@style/alertBtnStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/alertBtnStyle</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/alertNeutralBtnStyle</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:scrollbarThumbVertical">@drawable/scrollbar_thumb_vertical</item>
+        <item name="android:backgroundDimAmount">0.45</item>
+        <item name="android:textColorAlertDialogListItem">@color/textColor</item>
+        <item name="android:textColorPrimary">@color/textColor</item>
+        <item name="android:windowAnimationStyle">@style/dialogAnim</item>
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+        <item name="android:windowTitleStyle">@style/alertDialogTitleStyle</item>
+    </style>
+    <!--AlertDialog button style-->
+    <style name="alertBtnStyle" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minWidth">64dp</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+    </style>
+    <!--AlertDialog Neutral button style-->
+    <style name="alertNeutralBtnStyle" parent="alertBtnStyle">
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginLeft">4dp</item>
+
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+    </style>
+
+    <!--AlertDialog title-->
+    <style name="alertDialogTitleStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">?colorPrimary</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+</resources>

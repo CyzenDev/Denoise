@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="blue_500">#2196F3</color>
+    <color name="blue_accent">#4285F4</color>
+    <color name="light_blue_500">#03A9F4</color>
+
+    <color name="green_500">#4CAF50</color>
+    <color name="yellow_700">#FBC02D</color>
+    <color name="red_500">#F44336</color>
+
+    <color name="invert">#000</color>
+
+    <!-- 70% alpha -->
+    <color name="white_disabled">#46FFFFFF</color>
+
+    <!--For light theme-->
+    <color name="textColor">#303030</color>
+    <color name="content_background">#F5F5F5</color>
+    <color name="card_background">#FFF</color>
+    <color name="switch_track">#1E000000</color>
+
+    <!-- ListView divider-->
+    <color name="list_divider">#5FBDBDBD</color>
+
+
+</resources>

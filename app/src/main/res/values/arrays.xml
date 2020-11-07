@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="audio_source">
+        <item>Default</item>
+        <item>Microphone</item>
+        <item>Camcorder</item>
+        <item>Voice recognition (enhance voice)</item>
+        <item>voice communication (support echo cancellation or automatic gain control)</item>
+        <item>Unprocessed (raw) sound</item>
+        <item>Voice performance (lowest latency)</item>
+    </string-array>
+
+    <string-array name="audio_channel">
+        <item>Default</item>
+        <item>Mono</item>
+        <item>Stereo</item>
+    </string-array>
+
+    <string-array name="audio_encoding">
+        <item>PCM 16bit</item>
+        <item>PCM 8bit</item>
+        <item>PCM Float</item>
+    </string-array>
+
+</resources>

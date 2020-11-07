@@ -1,0 +1,15 @@
+<resources>
+
+    <color name="invert">#FFF</color>
+
+
+    <!--For night theme-->
+    <color name="textColor">#D4D4D4</color>
+    <color name="content_background">#1A1A1A</color>
+    <color name="card_background">#242424</color>
+    <color name="switch_track">#32FFFFFF</color>
+
+
+    <!-- ListView divider-->
+    <color name="list_divider">#2FBDBDBD</color>
+</resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="audio_source">
+        <item>默认</item>
+        <item>麦克风</item>
+        <item>相机麦克风</item>
+        <item>语音识别(增强人声)</item>
+        <item>通话(支持回声消除或自动增益)</item>
+        <item>未处理(原始)音频</item>
+        <item>高性能音频(最低延迟)</item>
+    </string-array>
+
+    <string-array name="audio_channel">
+        <item>默认</item>
+        <item>单声道</item>
+        <item>双声道</item>
+    </string-array>
+
+    <string-array name="audio_encoding">
+        <item>PCM 16比特</item>
+        <item>PCM 8比特</item>
+        <item>PCM 浮点</item>
+    </string-array>
+
+</resources>

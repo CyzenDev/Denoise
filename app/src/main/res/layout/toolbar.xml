@@ -8,6 +8,7 @@
     android:background="?colorPrimary"
     android:elevation="@dimen/toolbar_elevation"
     android:minHeight="?android:actionBarSize"
+    android:theme="@style/AppTheme.PopupOverlay"
     app:navigationIcon="@drawable/ic_back"
     app:popupTheme="@style/AppTheme.PopupOverlay"
     app:titleTextColor="?colorOnPrimary" />

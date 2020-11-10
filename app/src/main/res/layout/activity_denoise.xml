@@ -27,20 +27,29 @@
         android:paddingTop="60dp">
 
         <Button
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
             android:id="@+id/denoise_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
             android:text="开始" />
 
         <CheckBox
-            android:layout_centerInParent="true"
-            android:layout_below="@id/denoise_btn"
             android:id="@+id/denoise_cb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/denoise_btn"
+            android:layout_centerInParent="true"
             android:text="反向" />
+
+        <TextView
+            android:id="@+id/latency_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/denoise_cb"
+            android:layout_centerInParent="true"
+            android:padding="10dp"
+            android:textSize="17sp" />
 
     </RelativeLayout>
 

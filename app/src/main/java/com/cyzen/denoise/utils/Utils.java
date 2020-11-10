@@ -18,11 +18,12 @@ public class Utils {
         }
     }
 
+    //获取输入/输出最小缓冲区大小
     public static int getMinBufferSize(boolean isOutput) {
         if (isOutput) {
-            return AudioTrack.getMinBufferSize(RecordInfo.OUTPUT_SAMPLE_RATE, RecordInfo.OUTPUT_CHANNEL, RecordInfo.AUDIO_ENCODING);
+            return AudioTrack.getMinBufferSize(RecordInfo.AUDIO_SAMPLE_RATE, RecordInfo.OUTPUT_CHANNEL, RecordInfo.AUDIO_ENCODING);
         } else
-            return AudioRecord.getMinBufferSize(RecordInfo.INPUT_SAMPLE_RATE, RecordInfo.INPUT_CHANNEL, RecordInfo.AUDIO_ENCODING);
+            return AudioRecord.getMinBufferSize(RecordInfo.AUDIO_SAMPLE_RATE, RecordInfo.INPUT_CHANNEL, RecordInfo.AUDIO_ENCODING);
     }
 
 
@@ -48,16 +49,7 @@ public class Utils {
                         return i;
                     }
                 }
-                return 7;
-            case AUDIO_CHANNEL:
-                for (int i = 0; i < RecordInfo.AUDIO_CHANNELS.length; i++) {
-                    if (RecordInfo.AUDIO_CHANNELS[i] == value) {
-                        if (i > 2) {//输出声道
-                            return i - 3;
-                        } else return i;
-                    }
-                }
-                return 0;
+                return RecordInfo.AUDIO_SAMPLE_RATES.length - 1;
             case AUDIO_ENCODING:
                 for (int i = 0; i < RecordInfo.AUDIO_ENCODINGS.length; i++) {
                     if (RecordInfo.AUDIO_ENCODINGS[i] == value) {
@@ -92,14 +84,7 @@ public class Utils {
                         return i;
                     }
                 }
-                return RecordInfo.OUTPUT_SAMPLE_RATE;
-            case AUDIO_CHANNEL:
-                for (int i : RecordInfo.AUDIO_CHANNELS) {
-                    if (i == pos) {
-                        return i;
-                    }
-                }
-                return RecordInfo.INPUT_CHANNEL;
+                return RecordInfo.AUDIO_SAMPLE_RATE;
             case AUDIO_ENCODING:
                 for (int i : RecordInfo.AUDIO_ENCODINGS) {
                     if (i == pos) {

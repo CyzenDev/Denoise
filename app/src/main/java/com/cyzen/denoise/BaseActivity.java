@@ -24,9 +24,9 @@ public class BaseActivity extends AppCompatActivity {
         checkPermission(this);
     }
 
-    public static void checkPermission(Activity activity) {
-        boolean granted = (ActivityCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) || (ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED);
-        if (granted) {
+    public void checkPermission(Activity activity) {
+        boolean granted = (ActivityCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
+        if (!granted) {
             ActivityCompat.requestPermissions(activity, PERMISSION_ALL, REQUEST_CODE);
         }
     }

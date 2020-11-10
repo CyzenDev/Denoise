@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
-import android.media.AudioTrack;
 import android.media.MediaRecorder;
 
 import com.cyzen.denoise.App;
@@ -23,29 +22,18 @@ public class RecordInfo {
             MediaRecorder.AudioSource.VOICE_PERFORMANCE//29
     };
     public static final int[] AUDIO_SAMPLE_RATES = {
-            //Input
-            8000,
-            11025,
-            12000,
-            16000,
-            22050,
-            24000,
-            32000,
             44100,
             48000
     };
     public static final int[] AUDIO_CHANNELS = {
-            AudioFormat.CHANNEL_IN_DEFAULT,
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.CHANNEL_IN_STEREO,
             //Output
-            AudioFormat.CHANNEL_OUT_DEFAULT,
             AudioFormat.CHANNEL_OUT_MONO,
-            AudioFormat.CHANNEL_OUT_STEREO,
+            AudioFormat.CHANNEL_OUT_STEREO
     };
     public static final int[] AUDIO_ENCODINGS = {
             AudioFormat.ENCODING_PCM_16BIT,
-            AudioFormat.ENCODING_PCM_8BIT,
             AudioFormat.ENCODING_PCM_FLOAT
     };
 
@@ -59,47 +47,43 @@ public class RecordInfo {
     //声音来源
     public static int AUDIO_SOURCE = MediaRecorder.AudioSource.DEFAULT;
 
-    //输入采样频率
-    public static int INPUT_SAMPLE_RATE = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
-
-    //输出采样频率
-    public static int OUTPUT_SAMPLE_RATE = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
+    //采样频率，输入频率必须与输出相同(避免重采样延迟)
+    public static int AUDIO_SAMPLE_RATE;
 
     //输入声道
-    public static int INPUT_CHANNEL = AudioFormat.CHANNEL_IN_DEFAULT;
+    public static int INPUT_CHANNEL = AudioFormat.CHANNEL_IN_MONO;
 
     //输出声道
-    public static int OUTPUT_CHANNEL = AudioFormat.CHANNEL_OUT_DEFAULT;
+    public static int OUTPUT_CHANNEL = AudioFormat.CHANNEL_OUT_MONO;
 
     //编码
     public static int AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 
     //输入缓冲区字节大小
-    public static int INPUT_BUFFER_SIZE = Utils.getMinBufferSize(false);
+    public static int INPUT_BUFFER_SIZE = 0;
 
     //输出缓冲区字节大小
-    public static int OUTPUT_BUFFER_SIZE = Utils.getMinBufferSize(true);
+    public static int OUTPUT_BUFFER_SIZE = 0;
 
     //帧缓冲区大小
     public static int FRAMES_PER_BUFFER;
 
     static {
-        loadInfo();
         AudioManager audioManager = (AudioManager) App.getContext().getSystemService(Context.AUDIO_SERVICE);
+        AUDIO_SAMPLE_RATE = Utils.parseInt(audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE), 48000);
         FRAMES_PER_BUFFER = Utils.parseInt(audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER), 192);
-
+        loadInfo();
     }
 
     public static void loadInfo() {
         Context context = App.getContext();
         SharedPreferences preferences = context.getSharedPreferences(Constants.PREFS, Context.MODE_PRIVATE);
         AUDIO_SOURCE = Utils.getValueFromArray(TYPE.AUDIO_SOURCE, preferences.getInt(Constants.AUDIO_SOURCE, AUDIO_SOURCE));
-        INPUT_SAMPLE_RATE = Utils.getValueFromArray(TYPE.AUDIO_SAMPLE_RATE, preferences.getInt(Constants.AUDIO_SAMPLE_RATE, INPUT_SAMPLE_RATE));
-        INPUT_CHANNEL = Utils.getValueFromArray(TYPE.AUDIO_CHANNEL, preferences.getInt(Constants.INPUT_CHANNEL, INPUT_CHANNEL));
+        INPUT_CHANNEL = preferences.getInt(Constants.AUDIO_CHANNEL, 1) == 1 ? AUDIO_CHANNELS[0] : AUDIO_CHANNELS[1];
         AUDIO_ENCODING = Utils.getValueFromArray(TYPE.AUDIO_ENCODING, preferences.getInt(Constants.AUDIO_ENCODING, AUDIO_ENCODING));
         INPUT_BUFFER_SIZE = Utils.getMinBufferSize(false);
 
-        OUTPUT_CHANNEL = Utils.getValueFromArray(TYPE.AUDIO_CHANNEL, preferences.getInt(Constants.OUTPUT_CHANNEL, OUTPUT_CHANNEL));
+        OUTPUT_CHANNEL = preferences.getInt(Constants.AUDIO_CHANNEL, 1) == 1 ? AUDIO_CHANNELS[2] : AUDIO_CHANNELS[3];
         OUTPUT_BUFFER_SIZE = Utils.getMinBufferSize(true);
     }
 

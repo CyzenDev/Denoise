@@ -11,6 +11,7 @@
     <string name="no">No</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="def">Default</string>
     <string name="experimental">Experimental</string>
 
 
@@ -25,6 +26,7 @@
     <string name="input">Input</string>
     <string name="audio_source">Audio source</string>
     <string name="audio_sample_rate">Sample rate</string>
+    <string name="audio_sample_rate_alert">The default output frequency of the current audio system is %dHz\nTo avoid the additional delay caused by resampling, this option is read only</string>
     <string name="audio_channel">Audio channel</string>
     <string name="audio_encoding">Audio encoding</string>
     <string name="buffer_size">Buffer size</string>

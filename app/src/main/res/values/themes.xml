@@ -12,7 +12,6 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="colorControlNormal">?colorOnPrimary</item>
         <item name="colorSurface">@color/content_background</item>
         <item name="alertDialogTheme">@style/alertDialogTheme</item>
 
@@ -23,7 +22,9 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="Widget.MaterialComponents.PopupMenu" />
+    <style name="AppTheme.PopupOverlay" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="colorControlNormal">?colorOnPrimary</item>
+    </style>
 
     <!-- Dialog anim -->
     <style name="dialogAnim" parent="android:Animation">

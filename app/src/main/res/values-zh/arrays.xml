@@ -11,14 +11,12 @@
     </string-array>
 
     <string-array name="audio_channel">
-        <item>默认</item>
         <item>单声道</item>
         <item>双声道</item>
     </string-array>
 
     <string-array name="audio_encoding">
         <item>PCM 16比特</item>
-        <item>PCM 8比特</item>
         <item>PCM 浮点</item>
     </string-array>
 

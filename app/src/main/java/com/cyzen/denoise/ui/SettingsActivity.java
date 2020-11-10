@@ -35,8 +35,7 @@ public class SettingsActivity extends BaseActivity {
 
     private SharedPreferences preferences;
 
-    private int sourcePos = 0, sampleRatePos = 0, channelPos1 = 0, encodingPos = 0;
-    private int channelPos2 = 0;
+    private int sourcePos = 0, channelPos = 0, encodingPos = 0;
 
     private ListView listView;
     private MyListAdapter adapter;
@@ -49,11 +48,6 @@ public class SettingsActivity extends BaseActivity {
         }
         Map<String, Object> map;
 
-        //Input
-        map = new HashMap<>();
-        map.put(Constants.category, R.string.input);
-        list.add(map);
-
         map = new HashMap<>();
         map.put(Constants.key, R.string.audio_source);
         map.put(Constants.val, sourceList.get((sourcePos = Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_SOURCE, preferences.getInt(Constants.AUDIO_SOURCE, 0)))));
@@ -61,12 +55,12 @@ public class SettingsActivity extends BaseActivity {
 
         map = new HashMap<>();
         map.put(Constants.key, R.string.audio_sample_rate);
-        map.put(Constants.val, sampleRateList.get((sampleRatePos = Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_SAMPLE_RATE, preferences.getInt(Constants.AUDIO_SAMPLE_RATE, 0)))));
+        map.put(Constants.val, RecordInfo.AUDIO_SAMPLE_RATE + "Hz");
         list.add(map);
 
         map = new HashMap<>();
         map.put(Constants.key, R.string.audio_channel);
-        map.put(Constants.val, getResources().getStringArray(R.array.audio_channel)[(channelPos1 = Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_CHANNEL, preferences.getInt(Constants.INPUT_CHANNEL, 0)))]);
+        map.put(Constants.val, channelList.get(preferences.getInt(Constants.AUDIO_CHANNEL, 1) - 1));
         list.add(map);
 
         map = new HashMap<>();
@@ -76,24 +70,10 @@ public class SettingsActivity extends BaseActivity {
 
         map = new HashMap<>();
         map.put(Constants.key, R.string.buffer_size);
-        map.put(Constants.val, Utils.getMinBufferSize(false) + getString(R.string.bytes));
+        map.put(Constants.val, getString(R.string.input) + ": " + RecordInfo.INPUT_BUFFER_SIZE + getString(R.string.bytes) + "\n" +
+                getString(R.string.output) + ": " + RecordInfo.OUTPUT_BUFFER_SIZE + getString(R.string.bytes));
         list.add(map);
 
-
-        //Output
-        map = new HashMap<>();
-        map.put(Constants.category, R.string.output);
-        list.add(map);
-
-        map = new HashMap<>();
-        map.put(Constants.key, R.string.audio_channel);
-        map.put(Constants.val, channelList.get((channelPos2 = Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_CHANNEL, preferences.getInt(Constants.OUTPUT_CHANNEL, 0)))));
-        list.add(map);
-
-        map = new HashMap<>();
-        map.put(Constants.key, R.string.buffer_size);
-        map.put(Constants.val, Utils.getMinBufferSize(true) + getString(R.string.bytes));
-        list.add(map);
 
         if (adapter == null) {
             adapter = new MyListAdapter(list, new String[]{Constants.key, Constants.val, Constants.bool});
@@ -133,26 +113,18 @@ public class SettingsActivity extends BaseActivity {
             } else if (key == R.string.audio_sample_rate) {
                 alertDialog = new AlertDialog.Builder(this)
                         .setTitle(key)
-                        .setSingleChoiceItems(sampleRateList.toArray(new String[0]), (dialogPos = sampleRatePos), (dialog, which) -> dialogPos = which)
-                        .setPositiveButton(R.string.ok, (dialog, which) -> {
-                            preferences.edit().putInt(Constants.AUDIO_SAMPLE_RATE, Utils.parseInt(sampleRateList.get(dialogPos).split("Hz")[0])).apply();
-
-                            initList();
-                            RecordInfo.loadInfo();
-                        }).setNegativeButton(R.string.cancel, null).show();
+                        .setMessage(String.format(getString(R.string.audio_sample_rate_alert), RecordInfo.AUDIO_SAMPLE_RATE))
+                        .setPositiveButton(R.string.ok, null)
+                        .show();
                 if (!alertDialog.isShowing()) {
                     alertDialog.show();
                 }
             } else if (key == R.string.audio_channel) {
                 alertDialog = new AlertDialog.Builder(this)
                         .setTitle(key)
-                        .setSingleChoiceItems(channelList.toArray(new String[0]), (dialogPos = (position == 3 ? channelPos1 : channelPos2)), (dialog, which) -> dialogPos = which)
+                        .setSingleChoiceItems(channelList.toArray(new String[0]), (dialogPos = channelPos), (dialog, which) -> dialogPos = which)
                         .setPositiveButton(R.string.ok, (dialog, which) -> {
-                            if (position == 3) {
-                                preferences.edit().putInt(Constants.INPUT_CHANNEL, RecordInfo.AUDIO_CHANNELS[dialogPos]).apply();
-                            } else {
-                                preferences.edit().putInt(Constants.OUTPUT_CHANNEL, RecordInfo.AUDIO_CHANNELS[dialogPos + 3]).apply();
-                            }
+                            preferences.edit().putInt(Constants.AUDIO_CHANNEL, dialogPos + 1).apply();
 
                             initList();
                             RecordInfo.loadInfo();
@@ -205,7 +177,7 @@ public class SettingsActivity extends BaseActivity {
         return list;
     }
 
-    //获取设备支持的采样率
+    //获取设备支持的声道
     private static List<String> getChannelList() {
         String[] array = App.getContext().getResources().getStringArray(R.array.audio_channel);
         return new ArrayList<>(Arrays.asList(array));
@@ -215,11 +187,9 @@ public class SettingsActivity extends BaseActivity {
     private static List<String> getEncodingList() {
         List<String> list = new ArrayList<>();
         String[] array = App.getContext().getResources().getStringArray(R.array.audio_encoding);
-        for (int i = 0; i < 2; i++) {
-            list.add(array[i]);
-        }
+        list.add(array[0]);
         if (Utils.IS_MARSHMALLOW) {
-            list.add(array[2]);
+            list.add(array[1]);
         }
 
         return list;

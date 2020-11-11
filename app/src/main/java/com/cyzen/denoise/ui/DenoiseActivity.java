@@ -3,6 +3,7 @@ package com.cyzen.denoise.ui;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.cyzen.denoise.BaseActivity;
+import com.cyzen.denoise.Constants;
 import com.cyzen.denoise.R;
 import com.cyzen.denoise.record.RecordInfo;
 import com.cyzen.denoise.utils.Utils;
@@ -65,14 +67,18 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
     private final BarDataSet barDataSet = new BarDataSet(barEntries, "");
     private final BarData barData = new BarData(barDataSet);
 
+    private SharedPreferences preferences;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_denoise);
+        initView();
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        initView();
+        preferences = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
+
 
         Description description = new Description();
         description.setEnabled(false);
@@ -106,7 +112,7 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
         super.onResume();
         info = getResources().getStringArray(R.array.audio_source)[Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_SOURCE, RecordInfo.AUDIO_SOURCE)] + "|" +
                 RecordInfo.AUDIO_SAMPLE_RATE + "Hz|" +
-                getResources().getStringArray(R.array.audio_channel)[Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_CHANNEL, RecordInfo.INPUT_CHANNEL)] + "|" +
+                getResources().getStringArray(R.array.audio_channel)[preferences.getInt(Constants.AUDIO_CHANNEL, 1) - 1] + "|" +
                 getResources().getStringArray(R.array.audio_encoding)[Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_ENCODING, RecordInfo.AUDIO_ENCODING)];
 
         info += "\n低延迟音频=" + getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_LOW_LATENCY);

@@ -60,7 +60,7 @@ public class SettingsActivity extends BaseActivity {
 
         map = new HashMap<>();
         map.put(Constants.key, R.string.audio_channel);
-        map.put(Constants.val, channelList.get(preferences.getInt(Constants.AUDIO_CHANNEL, 1) - 1));
+        map.put(Constants.val, channelList.get((channelPos = preferences.getInt(Constants.AUDIO_CHANNEL, 1) - 1)));
         list.add(map);
 
         map = new HashMap<>();

@@ -15,9 +15,4 @@
         <item>双声道</item>
     </string-array>
 
-    <string-array name="audio_encoding">
-        <item>PCM 16比特</item>
-        <item>PCM 浮点</item>
-    </string-array>
-
 </resources>

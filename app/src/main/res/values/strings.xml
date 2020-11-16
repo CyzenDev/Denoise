@@ -29,6 +29,7 @@
     <string name="audio_sample_rate_alert">The default output frequency of the current audio system is %dHz\nTo avoid the additional delay caused by resampling, this option is read only</string>
     <string name="audio_channel">Audio channel</string>
     <string name="audio_encoding">Audio encoding</string>
+    <string name="audio_pcm_16">PCM 16bit</string>
     <string name="buffer_size">Buffer size</string>
     <string name="bytes">Bytes</string>
     <string name="output">Output</string>

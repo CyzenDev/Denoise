@@ -27,15 +27,13 @@ public class SettingsActivity extends BaseActivity {
     private final List<Map<String, Object>> list = new ArrayList<>();
 
     private static final List<String> sourceList = getSourceList();
-    private static final List<String> sampleRateList = getSampleRateList();
     private static final List<String> channelList = getChannelList();
-    private static final List<String> encodingList = getEncodingList();
 
     private int dialogPos;
 
     private SharedPreferences preferences;
 
-    private int sourcePos = 0, channelPos = 0, encodingPos = 0;
+    private int sourcePos = 0, channelPos = 0;
 
     private ListView listView;
     private MyListAdapter adapter;
@@ -50,7 +48,7 @@ public class SettingsActivity extends BaseActivity {
 
         map = new HashMap<>();
         map.put(Constants.key, R.string.audio_source);
-        map.put(Constants.val, sourceList.get((sourcePos = Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_SOURCE, preferences.getInt(Constants.AUDIO_SOURCE, 0)))));
+        map.put(Constants.val, sourceList.get((sourcePos = Utils.getSourcePos(preferences.getInt(Constants.AUDIO_SOURCE, 0)))));
         list.add(map);
 
         map = new HashMap<>();
@@ -61,11 +59,6 @@ public class SettingsActivity extends BaseActivity {
         map = new HashMap<>();
         map.put(Constants.key, R.string.audio_channel);
         map.put(Constants.val, channelList.get((channelPos = preferences.getInt(Constants.AUDIO_CHANNEL, 1) - 1)));
-        list.add(map);
-
-        map = new HashMap<>();
-        map.put(Constants.key, R.string.audio_encoding);
-        map.put(Constants.val, encodingList.get((encodingPos = Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_ENCODING, preferences.getInt(Constants.AUDIO_ENCODING, 0)))));
         list.add(map);
 
         map = new HashMap<>();
@@ -104,8 +97,8 @@ public class SettingsActivity extends BaseActivity {
                         .setPositiveButton(R.string.ok, (dialog, which) -> {
                             preferences.edit().putInt(Constants.AUDIO_SOURCE, RecordInfo.AUDIO_SOURCES[dialogPos]).apply();
 
-                            initList();
                             RecordInfo.loadInfo();
+                            initList();
                         }).setNegativeButton(R.string.cancel, null).create();
                 if (!alertDialog.isShowing()) {
                     alertDialog.show();
@@ -126,23 +119,9 @@ public class SettingsActivity extends BaseActivity {
                         .setPositiveButton(R.string.ok, (dialog, which) -> {
                             preferences.edit().putInt(Constants.AUDIO_CHANNEL, dialogPos + 1).apply();
 
-                            initList();
                             RecordInfo.loadInfo();
+                            initList();
                         }).setNegativeButton(R.string.cancel, null).create();
-                if (!alertDialog.isShowing()) {
-                    alertDialog.show();
-                }
-            } else if (key == R.string.audio_encoding) {
-                alertDialog = new AlertDialog.Builder(this)
-                        .setTitle(key)
-                        .setSingleChoiceItems(encodingList.toArray(new String[0]), (dialogPos = encodingPos), (dialog, which) -> dialogPos = which)
-                        .setPositiveButton(R.string.ok, (dialog, which) -> {
-                            encodingPos = dialogPos;
-                            preferences.edit().putInt(Constants.AUDIO_ENCODING, RecordInfo.AUDIO_ENCODINGS[dialogPos]).apply();
-
-                            initList();
-                            RecordInfo.loadInfo();
-                        }).setNegativeButton(R.string.cancel, null).show();
                 if (!alertDialog.isShowing()) {
                     alertDialog.show();
                 }
@@ -166,33 +145,10 @@ public class SettingsActivity extends BaseActivity {
         return list;
     }
 
-    //获取设备支持的采样率
-    private static List<String> getSampleRateList() {
-        List<String> list = new ArrayList<>();
-        int[] ints = RecordInfo.AUDIO_SAMPLE_RATES;
-        for (int anInt : ints) {
-            list.add(anInt + "Hz");
-        }
-
-        return list;
-    }
-
     //获取设备支持的声道
     private static List<String> getChannelList() {
         String[] array = App.getContext().getResources().getStringArray(R.array.audio_channel);
         return new ArrayList<>(Arrays.asList(array));
-    }
-
-    //获取设备支持的编码
-    private static List<String> getEncodingList() {
-        List<String> list = new ArrayList<>();
-        String[] array = App.getContext().getResources().getStringArray(R.array.audio_encoding);
-        list.add(array[0]);
-        if (Utils.IS_MARSHMALLOW) {
-            list.add(array[1]);
-        }
-
-        return list;
     }
 
 }

@@ -21,10 +21,6 @@ public class RecordInfo {
             MediaRecorder.AudioSource.UNPROCESSED,//24
             MediaRecorder.AudioSource.VOICE_PERFORMANCE//29
     };
-    public static final int[] AUDIO_SAMPLE_RATES = {
-            44100,
-            48000
-    };
     public static final int[] AUDIO_CHANNELS = {
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.CHANNEL_IN_STEREO,
@@ -32,17 +28,6 @@ public class RecordInfo {
             AudioFormat.CHANNEL_OUT_MONO,
             AudioFormat.CHANNEL_OUT_STEREO
     };
-    public static final int[] AUDIO_ENCODINGS = {
-            AudioFormat.ENCODING_PCM_16BIT,
-            AudioFormat.ENCODING_PCM_FLOAT
-    };
-
-    public enum TYPE {
-        AUDIO_SOURCE,
-        AUDIO_SAMPLE_RATE,
-        AUDIO_CHANNEL,
-        AUDIO_ENCODING
-    }
 
     //声音来源
     public static int AUDIO_SOURCE = MediaRecorder.AudioSource.DEFAULT;
@@ -78,9 +63,8 @@ public class RecordInfo {
     public static void loadInfo() {
         Context context = App.getContext();
         SharedPreferences preferences = context.getSharedPreferences(Constants.PREFS, Context.MODE_PRIVATE);
-        AUDIO_SOURCE = Utils.getValueFromArray(TYPE.AUDIO_SOURCE, preferences.getInt(Constants.AUDIO_SOURCE, AUDIO_SOURCE));
+        AUDIO_SOURCE = Utils.getSourceValueFromArray(preferences.getInt(Constants.AUDIO_SOURCE, AUDIO_SOURCE));
         INPUT_CHANNEL = preferences.getInt(Constants.AUDIO_CHANNEL, 1) == 1 ? AUDIO_CHANNELS[0] : AUDIO_CHANNELS[1];
-        AUDIO_ENCODING = Utils.getValueFromArray(TYPE.AUDIO_ENCODING, preferences.getInt(Constants.AUDIO_ENCODING, AUDIO_ENCODING));
         INPUT_BUFFER_SIZE = Utils.getMinBufferSize(false);
 
         OUTPUT_CHANNEL = preferences.getInt(Constants.AUDIO_CHANNEL, 1) == 1 ? AUDIO_CHANNELS[2] : AUDIO_CHANNELS[3];

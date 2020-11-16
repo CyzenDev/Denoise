@@ -28,73 +28,33 @@ public class Utils {
 
 
     /**
-     * 根据值获取在数组中的下标
+     * 根据值获取音频来源数组的下标
      *
-     * @param type  数组类型
      * @param value 值
      * @return 下标
      */
-    public static int getPosFromArray(RecordInfo.TYPE type, int value) {
-        switch (type) {
-            case AUDIO_SOURCE:
-                for (int i = 0; i < RecordInfo.AUDIO_SOURCES.length; i++) {
-                    if (RecordInfo.AUDIO_SOURCES[i] == value) {
-                        return i;
-                    }
-                }
-                return 0;
-            case AUDIO_SAMPLE_RATE:
-                for (int i = 0; i < RecordInfo.AUDIO_SAMPLE_RATES.length; i++) {
-                    if (RecordInfo.AUDIO_SAMPLE_RATES[i] == value) {
-                        return i;
-                    }
-                }
-                return RecordInfo.AUDIO_SAMPLE_RATES.length - 1;
-            case AUDIO_ENCODING:
-                for (int i = 0; i < RecordInfo.AUDIO_ENCODINGS.length; i++) {
-                    if (RecordInfo.AUDIO_ENCODINGS[i] == value) {
-                        return i;
-                    }
-                }
-                return 0;
-            default:
-                return 0;
+    public static int getSourcePos(int value) {
+        for (int i = 0; i < RecordInfo.AUDIO_SOURCES.length; i++) {
+            if (RecordInfo.AUDIO_SOURCES[i] == value) {
+                return i;
+            }
         }
+        return 0;
     }
 
     /**
-     * 获取合理的值
+     * 获取合理的音频来源值
      *
-     * @param type 数组类型
-     * @param pos  值
+     * @param pos 值
      * @return 合理的值
      */
-    public static int getValueFromArray(RecordInfo.TYPE type, int pos) {
-        switch (type) {
-            case AUDIO_SOURCE:
-                for (int i : RecordInfo.AUDIO_SOURCES) {
-                    if (i == pos) {
-                        return i;
-                    }
-                }
-                return RecordInfo.AUDIO_SOURCE;
-            case AUDIO_SAMPLE_RATE:
-                for (int i : RecordInfo.AUDIO_SAMPLE_RATES) {
-                    if (i == pos) {
-                        return i;
-                    }
-                }
-                return RecordInfo.AUDIO_SAMPLE_RATE;
-            case AUDIO_ENCODING:
-                for (int i : RecordInfo.AUDIO_ENCODINGS) {
-                    if (i == pos) {
-                        return i;
-                    }
-                }
-                return RecordInfo.AUDIO_ENCODING;
-            default:
-                return 0;
+    public static int getSourceValueFromArray(int pos) {
+        for (int i : RecordInfo.AUDIO_SOURCES) {
+            if (i == pos) {
+                return i;
+            }
         }
+        return RecordInfo.AUDIO_SOURCE;
     }
 
 
@@ -108,8 +68,6 @@ public class Utils {
     public static final boolean IS_OREO = Build.VERSION.SDK_INT >= 26;
     //安卓7.0判断
     public static final boolean IS_NOUGAT = Build.VERSION.SDK_INT >= 24;
-    //安卓7.1判断
-    public static final boolean IS_NOUGAT_MR1 = Build.VERSION.SDK_INT >= 25;
     //安卓6判断
     public static final boolean IS_MARSHMALLOW = Build.VERSION.SDK_INT >= 23;
 

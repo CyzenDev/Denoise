@@ -15,9 +15,4 @@
         <item>Stereo</item>
     </string-array>
 
-    <string-array name="audio_encoding">
-        <item>PCM 16bit</item>
-        <item>PCM Float</item>
-    </string-array>
-
 </resources>

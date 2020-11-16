@@ -1,6 +1,5 @@
 package com.cyzen.denoise.ui;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -110,10 +109,9 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
     @Override
     protected void onResume() {
         super.onResume();
-        info = getResources().getStringArray(R.array.audio_source)[Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_SOURCE, RecordInfo.AUDIO_SOURCE)] + "|" +
-                RecordInfo.AUDIO_SAMPLE_RATE + "Hz|" +
-                getResources().getStringArray(R.array.audio_channel)[preferences.getInt(Constants.AUDIO_CHANNEL, 1) - 1] + "|" +
-                getResources().getStringArray(R.array.audio_encoding)[Utils.getPosFromArray(RecordInfo.TYPE.AUDIO_ENCODING, RecordInfo.AUDIO_ENCODING)];
+        info = getResources().getStringArray(R.array.audio_source)[Utils.getSourcePos(RecordInfo.AUDIO_SOURCE)] + "  " +
+                RecordInfo.AUDIO_SAMPLE_RATE + "Hz  " +
+                getResources().getStringArray(R.array.audio_channel)[preferences.getInt(Constants.AUDIO_CHANNEL, 1) - 1];
 
         info += "\n低延迟音频=" + getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_LOW_LATENCY);
         if (Utils.IS_MARSHMALLOW) {
@@ -142,11 +140,10 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
         barChart.setData(barData);
     }
 
-    public short[] dataShort;
-    public float[] dataFloat;
+    public short[] audioData;
 
     //反向
-    public static boolean reserve = false;
+    public static boolean reserve = true;
 
     public RecordThread recordThread = null;
 
@@ -160,13 +157,18 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
             this.stop = true;
             try {
                 timeHandler.removeCallbacks(runnable);
-                latency_tv.setText("");
 
                 audioRecord.stop();
                 audioTrack.stop();
                 audioRecord.release();
                 audioTrack.release();
                 Utils.stopThread(this);
+                recordThread = null;
+
+                handler.post(() -> {
+                    latency_tv.setText("");
+                    denoise_btn.setText("开始");
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -182,7 +184,7 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                             .setAudioAttributes(new AudioAttributes.Builder()
                                     .setUsage(AudioAttributes.USAGE_MEDIA)
                                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                    .setFlags(AudioAttributes.FLAG_LOW_LATENCY)
+                                    //.setFlags(AudioAttributes.FLAG_LOW_LATENCY)
                                     .build())
                             .setAudioFormat(new AudioFormat.Builder()
                                     .setEncoding(RecordInfo.AUDIO_ENCODING)
@@ -239,6 +241,7 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                 }
 
 
+                //获取输出延迟
                 if (audioLatencyMs == -1) {
                     try {
                         Method getLatency = audioTrack.getClass().getMethod("getLatency");
@@ -249,6 +252,7 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                     }
                 }
 
+                //获取低延迟模式
                 if (Utils.IS_OREO) {
                     handler.post(() -> latency_tv.setText("低延迟模式=" + (audioTrack.getPerformanceMode() == AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)));
                 }
@@ -258,14 +262,30 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                     audioRecord.startRecording();
                     audioTrack.play();
 
-                    if (RecordInfo.AUDIO_ENCODING == AudioFormat.ENCODING_PCM_16BIT) {
-                        dataShort = new short[DATA_LENGTH];
-                        recordShort();
-                    } else {
-                        dataFloat = new float[DATA_LENGTH];
-                        recordFloat();
-                    }
+                    audioData = new short[DATA_LENGTH];
+                    while (!stop) {
+                        try {
+                            audioRecord.read(audioData, 0, DATA_LENGTH /*, AudioRecord.READ_NON_BLOCKING*/);
 
+                            if (reserve) {
+                                for (int i = 0; i < DATA_LENGTH; i++) {
+                                    audioData[i] = (short) -audioData[i];
+                                }
+                            }
+
+                            audioTrack.write(audioData, 0, DATA_LENGTH /*, AudioTrack.WRITE_NON_BLOCKING*/);
+                            if (Utils.IS_NOUGAT && !hasGetUnderrunCount) {
+                                hasGetUnderrunCount = true;
+                                Log.d("getUnderrunCount: ", audioTrack.getUnderrunCount() + "");
+                            }
+                            //画图
+                            drawChart();
+                            counts++;
+                        } catch (Exception record) {
+                            record.printStackTrace();
+                            Stop();
+                        }
+                    }
                 } catch (Exception start) {
                     start.printStackTrace();
                     Stop();
@@ -275,88 +295,27 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                 Stop();
             }
         }
-
-        public void recordShort() {
-            while (!stop && audioRecord.read(dataShort, 0, DATA_LENGTH /*, AudioRecord.READ_NON_BLOCKING*/) == DATA_LENGTH) {
-                try {
-
-                    if (reserve) {
-                        for (int i = 0; i < DATA_LENGTH; i++) {
-                            dataShort[i] = (short) -dataShort[i];
-                        }
-                    }
-
-                    audioTrack.write(dataShort, 0, DATA_LENGTH /*, AudioTrack.WRITE_NON_BLOCKING*/);
-                    if (Utils.IS_NOUGAT && !hasGetUnderrunCount) {
-                        hasGetUnderrunCount = true;
-                        Log.d("getUnderrunCount: ", audioTrack.getUnderrunCount() + "");
-                    }
-                    //画图
-                    drawChart(1);
-                    counts++;
-                } catch (Exception record) {
-                    record.printStackTrace();
-                    Stop();
-                }
-            }
-        }
-
-        @TargetApi(23)
-        public void recordFloat() {
-            while (!stop) {
-                try {
-                    audioRecord.read(dataFloat, 0, DATA_LENGTH, AudioRecord.READ_BLOCKING);
-
-                    if (reserve) {
-                        for (int i = 0; i < DATA_LENGTH; i++) {
-                            dataFloat[i] = -dataFloat[i];
-                        }
-                    }
-
-                    audioTrack.write(dataFloat, 0, DATA_LENGTH, AudioTrack.WRITE_BLOCKING);
-
-                    //画图
-                    drawChart(2);
-                    counts++;
-                } catch (Exception record) {
-                    record.printStackTrace();
-                    Stop();
-                }
-            }
-        }
-
     }
 
 
     private boolean canDraw = true;
 
-    private void drawChart(int type) {
+    private void drawChart() {
         handler.post(() -> {
             if (canDraw) {
                 canDraw = false;
 
                 try {
-                    if (type == 1) {
-                        //计算声音分贝大小
-                        long values = 0;
-                        for (int i = 0; i < dataShort.length; i++) {
-                            values += dataShort[i] * dataShort[i];
-                            barEntries.set(i, new BarEntry(i, dataShort[i]));
-                        }
-                        //平方和除以数据总长度，得到音量大小
-                        double volume = 10 * Math.log10((double) values / dataShort.length);
-                        setDbInfo(volume);
-                    } else {
-                        //计算声音分贝大小
-                        double values = 0;
-                        for (int i = 0; i < dataFloat.length; i++) {
-                            values += dataFloat[i] * dataFloat[i];
-                            barEntries.set(i, new BarEntry(i, dataFloat[i]));
-                        }
-                        //平方和除以数据总长度，得到音量大小
-                        double volume = 10 * Math.log10((double) values / dataFloat.length);
-                        setDbInfo(volume);
+                    //计算声音分贝大小
+                    long values = 0;
+                    for (int i = 0; i < audioData.length; i++) {
+                        values += audioData[i] * audioData[i];
+                        barEntries.set(i, new BarEntry(i, audioData[i]));
                     }
+                    //平方和除以数据总长度，得到音量大小
+                    double volume = 10 * Math.log10((double) values / audioData.length);
+                    setDbInfo(volume);
+
 
                     //barDataSet.notifyDataSetChanged();
                     //barData.notifyDataChanged();
@@ -400,8 +359,6 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                 runnable.run();
             } else {
                 recordThread.Stop();
-                recordThread = null;
-                denoise_btn.setText("开始");
             }
         } else if (id == R.id.denoise_cb) {
             denoise_cb.setChecked(reserve = !reserve);

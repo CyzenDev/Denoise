@@ -29,6 +29,7 @@
     <string name="audio_sample_rate_alert">当前系统默认输出频率为%dHz\n为避免重采样所带来的额外延迟此选项不可更改</string>
     <string name="audio_channel">声道</string>
     <string name="audio_encoding">音频编码</string>
+    <string name="audio_pcm_16">PCM 16比特</string>
     <string name="buffer_size">缓冲区大小</string>
     <string name="bytes">字节</string>
     <string name="output">输出</string>

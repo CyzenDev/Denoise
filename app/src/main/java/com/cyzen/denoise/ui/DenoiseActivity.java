@@ -39,6 +39,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DenoiseActivity extends BaseActivity implements View.OnClickListener {
 
@@ -105,30 +106,31 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
     }
 
     private String info;
+    private String infoFormat;
 
     @Override
     protected void onResume() {
         super.onResume();
-        info = getResources().getStringArray(R.array.audio_source)[Utils.getSourcePos(RecordInfo.AUDIO_SOURCE)] + "  " +
-                RecordInfo.AUDIO_SAMPLE_RATE + "Hz  " +
-                getResources().getStringArray(R.array.audio_channel)[preferences.getInt(Constants.AUDIO_CHANNEL, 1) - 1];
-
-        info += "\n低延迟音频=" + getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_LOW_LATENCY);
+        info = String.format(Locale.getDefault(), "%s  %dHz  %s\n" + getString(R.string.audio_low_latency) + "=%b",
+                getResources().getStringArray(R.array.audio_source)[Utils.getSourcePos(RecordInfo.AUDIO_SOURCE)],
+                RecordInfo.AUDIO_SAMPLE_RATE,
+                getResources().getStringArray(R.array.audio_channel)[preferences.getInt(Constants.AUDIO_CHANNEL, 1) - 1],
+                getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_LOW_LATENCY));
         if (Utils.IS_MARSHMALLOW) {
-            info += "  专业音频=" + getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_PRO);
+            info += "  " + getString(R.string.audio_pro) + "=" + getPackageManager().hasSystemFeature(PackageManager.FEATURE_AUDIO_PRO);
         }
 
         try {
             Method getOutputLatency = audioManager.getClass().getMethod("getOutputLatency", int.class);
             int latencyMs = (Integer) getOutputLatency.invoke(audioManager, AudioManager.STREAM_MUSIC);
-            info += "\n硬件延迟=" + latencyMs + "ms";
+            info += "\n" + getString(R.string.hardware_latency) + "=" + latencyMs + "ms";
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        info_tv.setText(info);
+        info_tv.setText(info = info.replace("true", getString(R.string.yes)).replace("false", getString(R.string.no)));
 
         audioLatencyMs = -1;
+
 
         //设置list大小
         barEntries.clear();
@@ -167,7 +169,7 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
 
                 handler.post(() -> {
                     latency_tv.setText("");
-                    denoise_btn.setText("开始");
+                    denoise_btn.setText(R.string.start);
                 });
             } catch (Exception e) {
                 e.printStackTrace();
@@ -178,7 +180,22 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
             //设置最高优先级
             setPriority(Thread.MAX_PRIORITY);
             try {
-                audioRecord = new AudioRecord(RecordInfo.AUDIO_SOURCE, RecordInfo.AUDIO_SAMPLE_RATE, RecordInfo.INPUT_CHANNEL, RecordInfo.AUDIO_ENCODING, RecordInfo.INPUT_BUFFER_SIZE);
+                //AudioRecord
+                if (Utils.IS_MARSHMALLOW) {
+                    audioRecord = new AudioRecord.Builder()
+                            .setAudioSource(RecordInfo.AUDIO_SOURCE)
+                            .setAudioFormat(new AudioFormat.Builder()
+                                    .setEncoding(RecordInfo.AUDIO_ENCODING)
+                                    .setSampleRate(RecordInfo.AUDIO_SAMPLE_RATE)
+                                    .setChannelMask(RecordInfo.INPUT_CHANNEL)
+                                    .build())
+                            .setBufferSizeInBytes(RecordInfo.INPUT_BUFFER_SIZE)
+                            .build();
+                } else {
+                    audioRecord = new AudioRecord(RecordInfo.AUDIO_SOURCE, RecordInfo.AUDIO_SAMPLE_RATE, RecordInfo.INPUT_CHANNEL, RecordInfo.AUDIO_ENCODING, RecordInfo.INPUT_BUFFER_SIZE);
+                }
+
+                //AudioTrack
                 if (Utils.IS_OREO) {
                     audioTrack = new AudioTrack.Builder()
                             .setAudioAttributes(new AudioAttributes.Builder()
@@ -244,17 +261,23 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                 //获取输出延迟
                 if (audioLatencyMs == -1) {
                     try {
+                        if (Utils.IS_PIE) {
+                            info += "   " + getString(R.string.input) + "=" + audioRecord.getMetrics().getInt(AudioRecord.MetricsConstants.LATENCY) + "ms";
+                        }
                         Method getLatency = audioTrack.getClass().getMethod("getLatency");
                         audioLatencyMs = (Integer) getLatency.invoke(audioTrack);
-                        info += "   输出延迟=" + audioLatencyMs + "ms";
+                        info += "   " + getString(R.string.output) + "=" + audioLatencyMs + "ms";
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
+                infoFormat = info + "\n" + getString(R.string.average) + ": %.02f " + getString(R.string.db) + "\n" + getString(R.string.count) + ": %d  " + getString(R.string.time) + ": %d s";
+
+
                 //获取低延迟模式
                 if (Utils.IS_OREO) {
-                    handler.post(() -> latency_tv.setText("低延迟模式=" + (audioTrack.getPerformanceMode() == AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)));
+                    handler.post(() -> latency_tv.setText(String.format(getString(R.string.low_latency_mode) + "=%s", ((audioTrack.getPerformanceMode() == AudioTrack.PERFORMANCE_MODE_LOW_LATENCY) ? getString(R.string.yes) : getString(R.string.no)))));
                 }
 
 
@@ -331,7 +354,7 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
     }
 
     public void setDbInfo(double volume) {
-        info_tv.setText(String.format(info + "\n平均：%.02f 分贝\n次数：%d  时间：%d s", volume, counts, mElapsedTime));
+        info_tv.setText(String.format(infoFormat, volume, counts, mElapsedTime));
     }
 
     private final Runnable runnable = new Runnable() {
@@ -351,7 +374,7 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                 recordThread = new RecordThread();
                 recordThread.start();
 
-                denoise_btn.setText("停止");
+                denoise_btn.setText(R.string.stop);
 
                 //计时
                 mElapsedTime = -1;

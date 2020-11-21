@@ -4,6 +4,20 @@
     <string name="settings">Settings</string>
 
 
+    <string name="audio_low_latency">Audio low latency</string>
+    <string name="audio_pro">Audio pro</string>
+    <string name="hardware_latency">HW latency</string>
+    <string name="input">Input</string>
+    <string name="output">Output</string>
+    <string name="average">Average</string>
+    <string name="db">dB</string>
+    <string name="count">Count</string>
+    <string name="time">Time</string>
+    <string name="low_latency_mode">Low latency mode</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+
+
     <!-- Misc -->
     <string name="tips">Tips</string>
     <string name="warning">Warning</string>
@@ -23,7 +37,6 @@
 
     <!-- Settings -->
     <string name="denoise">Denoise</string>
-    <string name="input">Input</string>
     <string name="audio_source">Audio source</string>
     <string name="audio_sample_rate">Sample rate</string>
     <string name="audio_sample_rate_alert">The default output frequency of the current audio system is %dHz\nTo avoid the additional delay caused by resampling, this option is read only</string>
@@ -32,6 +45,5 @@
     <string name="audio_pcm_16">PCM 16bit</string>
     <string name="buffer_size">Buffer size</string>
     <string name="bytes">Bytes</string>
-    <string name="output">Output</string>
 
 </resources>

@@ -4,6 +4,20 @@
     <string name="settings">设置</string>
 
 
+    <string name="audio_low_latency">低延迟音频</string>
+    <string name="audio_pro">专业音频</string>
+    <string name="hardware_latency">硬件延迟</string>
+    <string name="input">输入</string>
+    <string name="output">输出</string>
+    <string name="average">平均</string>
+    <string name="db">分贝</string>
+    <string name="count">次数</string>
+    <string name="time">时间</string>
+    <string name="low_latency_mode">低延迟模式</string>
+    <string name="start">开始</string>
+    <string name="stop">停止</string>
+
+
     <!-- Misc -->
     <string name="tips">提示</string>
     <string name="warning">警告</string>
@@ -23,7 +37,6 @@
 
     <!-- Settings -->
     <string name="denoise">降噪</string>
-    <string name="input">输入</string>
     <string name="audio_source">声音来源</string>
     <string name="audio_sample_rate">采样频率</string>
     <string name="audio_sample_rate_alert">当前系统默认输出频率为%dHz\n为避免重采样所带来的额外延迟此选项不可更改</string>
@@ -32,6 +45,5 @@
     <string name="audio_pcm_16">PCM 16比特</string>
     <string name="buffer_size">缓冲区大小</string>
     <string name="bytes">字节</string>
-    <string name="output">输出</string>
 
 </resources>

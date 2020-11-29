@@ -16,6 +16,8 @@
     <string name="low_latency_mode">低延迟模式</string>
     <string name="start">开始</string>
     <string name="stop">停止</string>
+    <string name="record_failed">录音失败，请检查设置</string>
+    <string name="plz_stop_record">请先停止录音</string>
 
 
     <!-- Misc -->

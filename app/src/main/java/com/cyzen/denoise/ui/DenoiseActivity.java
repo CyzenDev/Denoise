@@ -12,7 +12,6 @@ import android.media.AudioTrack;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,10 +47,8 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
 
     public static int mElapsedTime = -1;
 
-    public static int DATA_LENGTH = RecordInfo.OUTPUT_BUFFER_SIZE / 4;
+    public static int DATA_LENGTH = RecordInfo.FRAMES_PER_BUFFER * 4;
     public static int audioLatencyMs = -1;
-
-    private boolean hasGetUnderrunCount = false;
 
     TextView info_tv;
     BarChart barChart;
@@ -195,26 +192,27 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                     audioRecord = new AudioRecord(RecordInfo.AUDIO_SOURCE, RecordInfo.AUDIO_SAMPLE_RATE, RecordInfo.INPUT_CHANNEL, RecordInfo.AUDIO_ENCODING, RecordInfo.INPUT_BUFFER_SIZE);
                 }
 
+                //AudioFormat
+                AudioFormat audioFormat = new AudioFormat.Builder()
+                        .setEncoding(RecordInfo.AUDIO_ENCODING)
+                        .setSampleRate(RecordInfo.AUDIO_SAMPLE_RATE)
+                        .setChannelMask(RecordInfo.OUTPUT_CHANNEL)
+                        .build();
+
                 //AudioTrack
                 if (Utils.IS_OREO) {
                     audioTrack = new AudioTrack.Builder()
                             .setAudioAttributes(new AudioAttributes.Builder()
                                     .setUsage(AudioAttributes.USAGE_MEDIA)
                                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                    //.setFlags(AudioAttributes.FLAG_LOW_LATENCY)
                                     .build())
-                            .setAudioFormat(new AudioFormat.Builder()
-                                    .setEncoding(RecordInfo.AUDIO_ENCODING)
-                                    .setSampleRate(RecordInfo.AUDIO_SAMPLE_RATE)
-                                    .setChannelMask(RecordInfo.OUTPUT_CHANNEL)
-                                    .build())
-                            .setBufferSizeInBytes(RecordInfo.OUTPUT_BUFFER_SIZE)
+                            .setAudioFormat(audioFormat)
+                            //.setBufferSizeInBytes(RecordInfo.OUTPUT_BUFFER_SIZE)
                             .setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
                             .build();
 
                     audioTrack.setBufferSizeInFrames(DATA_LENGTH);
 
-                    hasGetUnderrunCount = false;
                 } else if (Utils.IS_NOUGAT) {
                     audioTrack = new AudioTrack.Builder()
                             .setAudioAttributes(new AudioAttributes.Builder()
@@ -222,43 +220,32 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                                     .setFlags(AudioAttributes.FLAG_LOW_LATENCY)
                                     .build())
-                            .setAudioFormat(new AudioFormat.Builder()
-                                    .setEncoding(RecordInfo.AUDIO_ENCODING)
-                                    .setSampleRate(RecordInfo.AUDIO_SAMPLE_RATE)
-                                    .setChannelMask(RecordInfo.OUTPUT_CHANNEL)
-                                    .build())
-                            .setBufferSizeInBytes(RecordInfo.OUTPUT_BUFFER_SIZE)
+                            .setAudioFormat(audioFormat)
+                            //.setBufferSizeInBytes(RecordInfo.OUTPUT_BUFFER_SIZE)
                             .build();
 
-                    hasGetUnderrunCount = false;
+                    audioTrack.setBufferSizeInFrames(DATA_LENGTH);
+
                 } else if (Utils.IS_MARSHMALLOW) {
                     audioTrack = new AudioTrack.Builder()
                             .setAudioAttributes(new AudioAttributes.Builder()
                                     .setUsage(AudioAttributes.USAGE_MEDIA)
                                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                                     .build())
-                            .setAudioFormat(new AudioFormat.Builder()
-                                    .setEncoding(RecordInfo.AUDIO_ENCODING)
-                                    .setSampleRate(RecordInfo.AUDIO_SAMPLE_RATE)
-                                    .setChannelMask(RecordInfo.OUTPUT_CHANNEL)
-                                    .build())
+                            .setAudioFormat(audioFormat)
                             .setBufferSizeInBytes(RecordInfo.OUTPUT_BUFFER_SIZE)
                             .build();
                 } else {
-                    audioTrack = new AudioTrack(new AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build(),
-                            new AudioFormat.Builder()
-                                    .setEncoding(RecordInfo.AUDIO_ENCODING)
-                                    .setSampleRate(RecordInfo.AUDIO_SAMPLE_RATE)
-                                    .setChannelMask(RecordInfo.OUTPUT_CHANNEL)
+                    audioTrack = new AudioTrack(
+                            new AudioAttributes.Builder()
+                                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                                     .build(),
-                            RecordInfo.OUTPUT_BUFFER_SIZE, AudioTrack.MODE_STREAM, audioManager.generateAudioSessionId());
+                            audioFormat, RecordInfo.OUTPUT_BUFFER_SIZE, AudioTrack.MODE_STREAM, audioManager.generateAudioSessionId());
                 }
 
 
-                //获取输出延迟
+                //获取延迟
                 if (audioLatencyMs == -1) {
                     try {
                         if (Utils.IS_PIE) {
@@ -297,10 +284,6 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                             }
 
                             audioTrack.write(audioData, 0, DATA_LENGTH /*, AudioTrack.WRITE_NON_BLOCKING*/);
-                            if (Utils.IS_NOUGAT && !hasGetUnderrunCount) {
-                                hasGetUnderrunCount = true;
-                                Log.d("getUnderrunCount: ", audioTrack.getUnderrunCount() + "");
-                            }
                             //画图
                             drawChart();
                             counts++;
@@ -312,6 +295,7 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
                 } catch (Exception start) {
                     start.printStackTrace();
                     Stop();
+                    Snackbar.make(info_tv.getRootView(), R.string.record_failed, Snackbar.LENGTH_LONG).show();
                 }
             } catch (Exception create) {
                 create.printStackTrace();
@@ -413,7 +397,7 @@ public class DenoiseActivity extends BaseActivity implements View.OnClickListene
             if (recordThread == null) {
                 startActivity(new Intent(this, SettingsActivity.class));
             } else {
-                Snackbar.make(info_tv.getRootView(), "请先停止录音", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(info_tv.getRootView(), R.string.plz_stop_record, Snackbar.LENGTH_SHORT).show();
             }
             return true;
         }
